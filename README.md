@@ -68,7 +68,7 @@ docker run -it -p 3001:3001 -v ./config:/config --device /dev/dri:/dev/dri nickr
    在浏览器中访问：`https://localhost:3001` 或 `https://<服务器IP>:3001`
    > **注意：** 映射3000端口用于HTTP访问，3001端口用于HTTPS访问，建议使用HTTPS。
 
-### docker-compose 部署
+### Docker Compose 部署
 1. **创建项目目录并进入**
    ```bash
    mkdir wechat-selkies
@@ -81,27 +81,43 @@ docker run -it -p 3001:3001 -v ./config:/config --device /dev/dri:/dev/dri nickr
         image: nickrunning/wechat-selkies:latest    # or ghcr.io/nickrunning/wechat-selkies:latest
         container_name: wechat-selkies
         ports:
-          - "3000:3000"       # http port
-          - "3001:3001"       # https port
+          - "${HTTP_PORT:-3000}:3000"
+          - "${HTTPS_PORT:-3001}:3001"
         restart: unless-stopped
         volumes:
           - ./config:/config
         devices:
-          - /dev/dri:/dev/dri # optional, for hardware acceleration
+          - /dev/dri:/dev/dri
         environment:
-          - PUID=1000                    # user ID, set according to your system
-          - PGID=100                     # group ID, set according to your system
-          - TZ=Asia/Shanghai             # timezone, set according to your timezone
-          - LC_ALL=zh_CN.UTF-8           # locale, set according to your needs
-          - AUTO_START_WECHAT=true       # default is true
-          - AUTO_START_QQ=false          # default is false
-          # - CUSTOM_USER=<Your Name>      # recommended to set a custom user name
-          # - PASSWORD=<Your Password>     # recommended to set a password for selkies web ui
-        shm_size: "1gb"                  # recommended, will improve performance
+          - PUID=${PUID:-1000}
+          - PGID=${PGID:-100}
+          - TZ=Asia/Shanghai
+          - LC_ALL=zh_CN.UTF-8
+          - AUTO_START_WECHAT=true
+          - AUTO_START_QQ=false
+          - CUSTOM_USER=${CUSTOM_USER:-}
+          - PASSWORD=${PASSWORD:-}
+        shm_size: "${SHM_SIZE:-1gb}"
     ```
-3. **启动服务**
+3. **创建 `.env` 文件（可选）**
+
+   复制 `.env.example` 并按需修改，未设置的变量将使用默认值：
    ```bash
-   docker-compose up -d
+   cp .env.example .env
+   ```
+   `.env` 文件示例：
+   ```env
+   HTTP_PORT=3000
+   HTTPS_PORT=3001
+   PUID=1000
+   PGID=100
+   # CUSTOM_USER=
+   # PASSWORD=
+   SHM_SIZE=1gb
+   ```
+4. **启动服务**
+   ```bash
+   docker compose up -d
    ```
 
 ### 源码部署
@@ -114,7 +130,7 @@ docker run -it -p 3001:3001 -v ./config:/config --device /dev/dri:/dev/dri nickr
 
 2. **启动服务**
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
 3. **访问微信**
@@ -137,7 +153,7 @@ docker run -it -p 3001:3001 -v ./config:/config --device /dev/dri:/dev/dri nickr
 
 #### 环境变量配置
 
-在 `docker-compose.yml` 中可以配置以下环境变量：
+在 `docker-compose.yml` 中可以配置以下环境变量，支持通过 `.env` 文件覆盖带有 `${VAR:-default}` 的配置项：
 
 | 变量名 | 默认值 | 说明 |
 |--------|--------|------|
@@ -190,6 +206,7 @@ devices:
 ```
 wechat-selkies/
 ├── docker-compose.yml          # Docker Compose 配置文件
+├── .env.example                # 环境变量示例文件
 ├── Dockerfile                  # Docker 镜像构建文件
 ├── LICENSE                     # License
 ├── README.md                   # 项目说明文档
@@ -208,10 +225,10 @@ wechat-selkies/
 
 ```bash
 # 使用预构建镜像
-docker-compose pull && docker-compose up -d
+docker compose pull && docker compose up -d
 
 # 使用源码构建
-git pull && docker-compose up -d --build
+git pull && docker compose up -d --build
 ```
 
 > **注意：** 微信和QQ的安装包 URL 指向官方最新版本，重新构建镜像时会自动下载最新版。
@@ -226,7 +243,7 @@ git pull && docker-compose up -d --build
 
 查看容器运行日志：
 ```bash
-docker-compose logs -f wechat-selkies
+docker compose logs -f wechat-selkies
 ```
 
 ## 技术架构

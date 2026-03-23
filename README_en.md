@@ -66,7 +66,7 @@ docker run -it -p 3001:3001 -v ./config:/config --device /dev/dri:/dev/dri nickr
    Open in browser: `https://localhost:3001` or `https://<server-ip>:3001`
    > **Note**: 3001 port is for HTTPS access. If you need HTTP access, please map port 3000 as well.
 
-### docker-compose Deployment
+### Docker Compose Deployment
 1. **Create project directory and navigate into it**
    ```bash
    mkdir wechat-selkies
@@ -79,27 +79,43 @@ docker run -it -p 3001:3001 -v ./config:/config --device /dev/dri:/dev/dri nickr
         image: nickrunning/wechat-selkies:latest    # or ghcr.io/nickrunning/wechat-selkies:latest
         container_name: wechat-selkies
         ports:
-          - "3000:3000"       # http port
-          - "3001:3001"       # https port
+          - "${HTTP_PORT:-3000}:3000"
+          - "${HTTPS_PORT:-3001}:3001"
         restart: unless-stopped
         volumes:
           - ./config:/config
         devices:
-          - /dev/dri:/dev/dri # optional, for hardware acceleration
+          - /dev/dri:/dev/dri
         environment:
-          - PUID=1000                    # user ID, set according to your system
-          - PGID=100                     # group ID, set according to your system
-          - TZ=Asia/Shanghai             # timezone, set according to your timezone
-          - LC_ALL=zh_CN.UTF-8           # locale, set according to your needs
-          - AUTO_START_WECHAT=true       # default is true
-          - AUTO_START_QQ=false          # default is false
-          # - CUSTOM_USER=<Your Name>      # recommended to set a custom user name
-          # - PASSWORD=<Your Password>     # recommended to set a password for selkies web ui
-        shm_size: "1gb"                  # recommended, will improve performance
+          - PUID=${PUID:-1000}
+          - PGID=${PGID:-100}
+          - TZ=Asia/Shanghai
+          - LC_ALL=zh_CN.UTF-8
+          - AUTO_START_WECHAT=true
+          - AUTO_START_QQ=false
+          - CUSTOM_USER=${CUSTOM_USER:-}
+          - PASSWORD=${PASSWORD:-}
+        shm_size: "${SHM_SIZE:-1gb}"
     ```
-3. **Start the service**
+3. **Create `.env` file (optional)**
+
+   Copy `.env.example` and modify as needed. Variables not set will use default values:
    ```bash
-   docker-compose up -d
+   cp .env.example .env
+   ```
+   `.env` file example:
+   ```env
+   HTTP_PORT=3000
+   HTTPS_PORT=3001
+   PUID=1000
+   PGID=100
+   # CUSTOM_USER=
+   # PASSWORD=
+   SHM_SIZE=1gb
+   ```
+4. **Start the service**
+   ```bash
+   docker compose up -d
    ```
 
 ### Source Code Deployment
@@ -112,7 +128,7 @@ docker run -it -p 3001:3001 -v ./config:/config --device /dev/dri:/dev/dri nickr
 
 2. **Start the service**
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
 3. **Access WeChat**
@@ -135,7 +151,7 @@ This project supports pushing to both GitHub Container Registry and Docker Hub. 
 
 #### Environment Variables
 
-Configure the following environment variables in `docker-compose.yml`:
+Configure the following environment variables in `docker-compose.yml`. Variables with `${VAR:-default}` syntax can be overridden via a `.env` file:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
@@ -188,6 +204,7 @@ devices:
 ```
 wechat-selkies/
 ├── docker-compose.yml          # Docker Compose configuration file
+├── .env.example                # Environment variables example file
 ├── Dockerfile                  # Docker image build file
 ├── LICENSE                     # License
 ├── README.md                   # Project documentation (Chinese)
@@ -207,10 +224,10 @@ When WeChat or QQ displays a "version outdated" message, simply pull the latest 
 
 ```bash
 # Using pre-built images
-docker-compose pull && docker-compose up -d
+docker compose pull && docker compose up -d
 
 # Using source code build
-git pull && docker-compose up -d --build
+git pull && docker compose up -d --build
 ```
 
 > **Note:** The WeChat and QQ download URLs point to the latest official versions. Rebuilding the image will automatically download the newest version.
@@ -225,7 +242,7 @@ git pull && docker-compose up -d --build
 
 View container runtime logs:
 ```bash
-docker-compose logs -f wechat-selkies
+docker compose logs -f wechat-selkies
 ```
 
 ## Technical Architecture
