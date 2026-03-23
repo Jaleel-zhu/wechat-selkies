@@ -35,6 +35,7 @@ This project packages the official WeChat/QQ Linux client in a Docker container,
 - 🪟 **Window Switcher**: Added a floating window switcher in the top left corner for easy switching to background windows, laying the foundation for adding other features in the future
 - 🤖 **Auto Start**: Configurable auto-start for WeChat and QQ clients (optional)
 - 📋 **Desktop Shortcut Integration**: Automatically scans `.desktop` files in `~/Desktop/` and adds them to the right-click menu, making it easy to launch third-party applications (e.g., apps installed via proot-apps)
+- 📂 **File Manager**: Built-in PCManFM lightweight file manager, accessible from the right-click menu for easy file management inside the container
 
 ## Screenshots
 ![WeChat Screenshot](./docs/images/wechat-selkies-1.jpg)
@@ -199,6 +200,20 @@ wechat-selkies/
 ```
 
 ## Troubleshooting
+
+### Updating WeChat/QQ Version
+
+When WeChat or QQ displays a "version outdated" message, simply pull the latest image and recreate the container. Your chat history and configurations will be preserved:
+
+```bash
+# Using pre-built images
+docker-compose pull && docker-compose up -d
+
+# Using source code build
+git pull && docker-compose up -d --build
+```
+
+> **Note:** The WeChat and QQ download URLs point to the latest official versions. Rebuilding the image will automatically download the newest version.
 
 ### Common Issues
 
