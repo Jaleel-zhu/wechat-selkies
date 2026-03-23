@@ -63,6 +63,12 @@ Docker Hub镜像：
 docker run -it -p 3001:3001 -v ./config:/config --device /dev/dri:/dev/dri nickrunning/wechat-selkies:latest
 ```
 
+> **精简版镜像**：如果只需要微信（不含 QQ 和文件管理器），可使用 `minimal` 标签，镜像体积更小：
+> ```bash
+> docker run -it -p 3001:3001 -v ./config:/config --device /dev/dri:/dev/dri ghcr.io/nickrunning/wechat-selkies:minimal
+> ```
+> 精简版也支持版本号标签，如 `:1.2.3-minimal`、`:1.2-minimal`，方便锁定特定版本。
+
 2. **访问微信**
    
    在浏览器中访问：`https://localhost:3001` 或 `https://<服务器IP>:3001`
@@ -136,6 +142,11 @@ docker run -it -p 3001:3001 -v ./config:/config --device /dev/dri:/dev/dri nickr
 3. **访问微信**
 
    在浏览器中访问：`https://localhost:3001` 或 `https://<服务器IP>:3001`
+
+> **构建精简版**：源码部署时可通过 build-arg 构建仅含微信的精简镜像：
+> ```bash
+> docker build --build-arg INSTALL_QQ=false --build-arg INSTALL_PCMANFM=false -t wechat-selkies:minimal .
+> ```
 
 ### 配置说明
 

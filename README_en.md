@@ -61,6 +61,12 @@ Docker Hub image:
 docker run -it -p 3001:3001 -v ./config:/config --device /dev/dri:/dev/dri nickrunning/wechat-selkies:latest
 ```
 
+> **Minimal image**: If you only need WeChat (without QQ and file manager), use the `minimal` tag for a smaller image:
+> ```bash
+> docker run -it -p 3001:3001 -v ./config:/config --device /dev/dri:/dev/dri ghcr.io/nickrunning/wechat-selkies:minimal
+> ```
+> Versioned minimal tags are also available, e.g. `:1.2.3-minimal`, `:1.2-minimal`, for pinning to a specific release.
+
 2. **Access WeChat**
    
    Open in browser: `https://localhost:3001` or `https://<server-ip>:3001`
@@ -134,6 +140,11 @@ docker run -it -p 3001:3001 -v ./config:/config --device /dev/dri:/dev/dri nickr
 3. **Access WeChat**
 
    Open in browser: `https://localhost:3001` or `https://<server-ip>:3001`
+
+> **Build minimal version**: When building from source, use build-arg to create a WeChat-only image:
+> ```bash
+> docker build --build-arg INSTALL_QQ=false --build-arg INSTALL_PCMANFM=false -t wechat-selkies:minimal .
+> ```
 
 ### Configuration
 
