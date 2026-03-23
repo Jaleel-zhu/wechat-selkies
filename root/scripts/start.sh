@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# clean up stale dbus pid file to prevent startup failures after container restart
+rm -f /run/dbus/pid
+
 # configure openbox dock mode for stalonetray
 if [ ! -f /config/.config/openbox/rc.xml ] || grep -A20 "<dock>" /config/.config/openbox/rc.xml | grep -q "<noStrut>no</noStrut>"; then
     mkdir -p /config/.config/openbox
