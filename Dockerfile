@@ -51,7 +51,7 @@ RUN case "$TARGETPLATFORM" in \
         exit 1 ;; \
     esac && \
     echo "📦 Downloading WeChat for $WECHAT_ARCH architecture..." && \
-    curl -fsSL -o wechat.deb "$WECHAT_URL" && \
+    curl -fsSL --retry 3 --retry-delay 10 --retry-all-errors -o wechat.deb "$WECHAT_URL" && \
     echo "🔧 Installing WeChat..." && \
     (dpkg -i wechat.deb || (apt-get update && apt-get install -f -y && dpkg -i wechat.deb)) && \
     rm -f wechat.deb && \
@@ -72,7 +72,7 @@ RUN if [ "$INSTALL_QQ" = "true" ]; then \
             exit 1 ;; \
         esac && \
         echo "📦 Downloading QQ for $QQ_ARCH architecture..." && \
-        curl -fsSL -o qq.deb "$QQ_URL" && \
+        curl -fsSL --retry 3 --retry-delay 10 --retry-all-errors -o qq.deb "$QQ_URL" && \
         echo "🔧 Installing QQ..." && \
         (dpkg -i qq.deb || (apt-get update && apt-get install -f -y && dpkg -i qq.deb)) && \
         rm -f qq.deb && \
