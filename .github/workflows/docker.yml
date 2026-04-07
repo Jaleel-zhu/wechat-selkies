@@ -3,6 +3,10 @@ name: Build and Publish Docker Image
 on:
   workflow_dispatch:
   push:
+    branches:
+      - master
+    paths:
+      - 'versions/upstream.env'
     tags:
       - 'v*'
 

@@ -22,6 +22,8 @@ This project packages the official WeChat/QQ Linux client in a Docker container,
 
 > If some features are missing after an upgrade, please clear the `openbox` directory in the local mounted directory (e.g., `./config/.config/openbox`).
 
+> This repository includes automatic upstream WeChat version detection: GitHub Actions periodically checks the official `.deb` packages, updates `versions/upstream.env` when changes are detected, and then triggers the image build workflow.
+
 ## Features
 
 - 🌐 **Browser Access**: Use WeChat directly through web browsers without local installation
@@ -242,6 +244,19 @@ git pull && docker compose up -d --build
 ```
 
 > **Note:** The WeChat and QQ download URLs point to the latest official versions. Rebuilding the image will automatically download the newest version.
+
+For maintainers, the current automation flow is:
+
+1. `Detect Upstream Package Updates` checks the official WeChat packages every 6 hours and can also be triggered manually
+2. If the version or package hash changes, the workflow updates `versions/upstream.env`
+3. Once that file is committed to `master`, it automatically triggers `Build and Publish Docker Image`
+
+The version state file is stored at `versions/upstream.env` and currently records:
+
+- WeChat amd64/arm64 download URLs
+- Parsed WeChat amd64/arm64 package versions
+- WeChat amd64/arm64 package SHA256 hashes
+- The last detection time that actually changed the tracked state
 
 ### Common Issues
 
